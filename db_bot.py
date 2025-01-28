@@ -1,6 +1,7 @@
 import os
 import sqlite3
 import openai
+import json
 
 # Load OpenAI credentials
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -141,9 +142,10 @@ def main():
 
     strategies = ["Zero-shot", "Single-domain Few-shot", "Cross-domain Few-shot"]
 
+    results = []
+
     for question in questions:
         for strategy in strategies:
-            print(question)
             print(f"\n=== Strategy: {strategy} ===")
             if strategy == "Single-domain Few-shot":
                 examples = single_domain_examples
@@ -153,15 +155,24 @@ def main():
                 examples = None
             
             sql_query = generate_sql_from_gpt(question, schema, strategy, examples)
-            print(f"Generated SQL: ({strategy}):\n{sql_query}")
-
             query_results = run_sql_query(sql_query)
-            print(f"Query Results: ({strategy}): {query_results}")
-
             final_answer = convert_data_to_natural_language(question, sql_query, query_results)
-            print(f"\nAnswer ({strategy}):\n{final_answer}")
-            print("\n\n\n")
-    print("Done!")
+
+            # Save result in the list
+            results.append({
+                "question": question,
+                "strategy": strategy,
+                "sql_query": sql_query,
+                "query_results": query_results,
+                "final_answer": final_answer
+            })
+
+    # Save results to JSON file
+    output_path = os.path.join(os.path.dirname(__file__), "results.json")
+    with open(output_path, "w") as f:
+        json.dump(results, f, indent=4)
+
+    print(f"Results saved to {output_path}")
 
 if __name__ == "__main__":
     main()

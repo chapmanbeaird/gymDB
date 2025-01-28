@@ -1,0 +1,158 @@
+[
+    {
+        "question": "What are the names of all gym members?",
+        "strategy": "Zero-shot",
+        "sql_query": "\nSELECT name FROM member;\n",
+        "query_results": [
+            [
+                "Alice Johnson"
+            ],
+            [
+                "Bob Smith"
+            ],
+            [
+                "Charlie Brown"
+            ],
+            [
+                "Diana Prince"
+            ],
+            [
+                "Ethan Hunt"
+            ]
+        ],
+        "final_answer": "The results of the query show the names of all gym members. The members are:\n\n1. Alice Johnson\n2. Bob Smith\n3. Charlie Brown\n4. Diana Prince\n5. Ethan Hunt\n\nThese are the individuals who are currently registered as members of the gym."
+    },
+    {
+        "question": "What are the names of all gym members?",
+        "strategy": "Single-domain Few-shot",
+        "sql_query": "SELECT name FROM member;",
+        "query_results": [
+            [
+                "Alice Johnson"
+            ],
+            [
+                "Bob Smith"
+            ],
+            [
+                "Charlie Brown"
+            ],
+            [
+                "Diana Prince"
+            ],
+            [
+                "Ethan Hunt"
+            ]
+        ],
+        "final_answer": "The results of the query show the names of all gym members. The members are:\n\n1. Alice Johnson\n2. Bob Smith\n3. Charlie Brown\n4. Diana Prince\n5. Ethan Hunt"
+    },
+    {
+        "question": "What are the names of all gym members?",
+        "strategy": "Cross-domain Few-shot",
+        "sql_query": "SELECT name FROM member;",
+        "query_results": [
+            [
+                "Alice Johnson"
+            ],
+            [
+                "Bob Smith"
+            ],
+            [
+                "Charlie Brown"
+            ],
+            [
+                "Diana Prince"
+            ],
+            [
+                "Ethan Hunt"
+            ]
+        ],
+        "final_answer": "The results of the query show the names of all gym members. The members are:\n\n1. Alice Johnson\n2. Bob Smith\n3. Charlie Brown\n4. Diana Prince\n5. Ethan Hunt"
+    },
+    {
+        "question": "When did Alice Johnson join the gym?",
+        "strategy": "Zero-shot",
+        "sql_query": "\nSELECT join_date FROM member WHERE name = 'Alice Johnson';\n",
+        "query_results": [
+            [
+                "2025-01-01"
+            ]
+        ],
+        "final_answer": "Alice Johnson joined the gym on January 1, 2025."
+    },
+    {
+        "question": "When did Alice Johnson join the gym?",
+        "strategy": "Single-domain Few-shot",
+        "sql_query": "SELECT join_date FROM member WHERE name = 'Alice Johnson';",
+        "query_results": [
+            [
+                "2025-01-01"
+            ]
+        ],
+        "final_answer": "Alice Johnson joined the gym on January 1, 2025."
+    },
+    {
+        "question": "When did Alice Johnson join the gym?",
+        "strategy": "Cross-domain Few-shot",
+        "sql_query": "SELECT join_date FROM member WHERE name = 'Alice Johnson';",
+        "query_results": [
+            [
+                "2025-01-01"
+            ]
+        ],
+        "final_answer": "Alice Johnson joined the gym on January 1, 2025."
+    },
+    {
+        "question": "Which members can receive SMS messages?",
+        "strategy": "Zero-shot",
+        "sql_query": "\nSELECT m.member_id, m.name\nFROM member m\nJOIN phone p ON m.member_id = p.member_id\nWHERE p.can_receive_sms = 1;\n",
+        "query_results": [
+            [
+                1,
+                "Alice Johnson"
+            ],
+            [
+                3,
+                "Charlie Brown"
+            ],
+            [
+                4,
+                "Diana Prince"
+            ]
+        ],
+        "final_answer": "The query identifies members who are eligible to receive SMS messages. The results show that the following members can receive SMS messages:\n\n1. Alice Johnson\n2. Charlie Brown\n3. Diana Prince\n\nIn total, there are three members who meet this criterion."
+    },
+    {
+        "question": "Which members can receive SMS messages?",
+        "strategy": "Single-domain Few-shot",
+        "sql_query": "\nSELECT m.name \nFROM member m\nJOIN phone p ON m.member_id = p.member_id\nWHERE p.can_receive_sms = 1;\n",
+        "query_results": [
+            [
+                "Alice Johnson"
+            ],
+            [
+                "Charlie Brown"
+            ],
+            [
+                "Diana Prince"
+            ]
+        ],
+        "final_answer": "The results indicate that the following members are able to receive SMS messages: Alice Johnson, Charlie Brown, and Diana Prince."
+    },
+    {
+        "question": "Which members can receive SMS messages?",
+        "strategy": "Cross-domain Few-shot",
+        "sql_query": "SELECT m.name FROM member m JOIN phone p ON m.member_id = p.member_id WHERE p.can_receive_sms = 1;",
+        "query_results": [
+            [
+                "Alice Johnson"
+            ],
+            [
+                "Charlie Brown"
+            ],
+            [
+                "Diana Prince"
+            ]
+        ],
+        "final_answer": "The results indicate that the following members are able to receive SMS messages: Alice Johnson, Charlie Brown, and Diana Prince."
+    }
+]
