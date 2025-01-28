@@ -137,7 +137,9 @@ def main():
     questions = [
         "What are the names of all gym members?", 
         "When did Alice Johnson join the gym?", 
-        "Which members can receive SMS messages?"
+        "Which members can receive SMS messages?",
+        "Which members attended more than one class and what are the names of the classes they attended?",
+        "What is the total revenue generated from memberships for each plan, and how many members are currently subscribed to each plan?"
     ]
 
     strategies = ["Zero-shot", "Single-domain Few-shot", "Cross-domain Few-shot"]

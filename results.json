@@ -43,7 +43,7 @@
                 "Ethan Hunt"
             ]
         ],
-        "final_answer": "The results of the query show the names of all gym members. The members are:\n\n1. Alice Johnson\n2. Bob Smith\n3. Charlie Brown\n4. Diana Prince\n5. Ethan Hunt"
+        "final_answer": "The results show the names of all gym members. The members are:\n\n1. Alice Johnson\n2. Bob Smith\n3. Charlie Brown\n4. Diana Prince\n5. Ethan Hunt"
     },
     {
         "question": "What are the names of all gym members?",
@@ -66,7 +66,7 @@
                 "Ethan Hunt"
             ]
         ],
-        "final_answer": "The results of the query show the names of all gym members. The members are:\n\n1. Alice Johnson\n2. Bob Smith\n3. Charlie Brown\n4. Diana Prince\n5. Ethan Hunt"
+        "final_answer": "The results show the names of all gym members. The members are:\n\n1. Alice Johnson\n2. Bob Smith\n3. Charlie Brown\n4. Diana Prince\n5. Ethan Hunt"
     },
     {
         "question": "When did Alice Johnson join the gym?",
@@ -119,7 +119,7 @@
                 "Diana Prince"
             ]
         ],
-        "final_answer": "The query identifies members who are eligible to receive SMS messages. The results show that the following members can receive SMS messages:\n\n1. Alice Johnson\n2. Charlie Brown\n3. Diana Prince\n\nIn total, there are three members who meet this criterion."
+        "final_answer": "The results show that the following members are able to receive SMS messages:\n\n1. Alice Johnson\n2. Charlie Brown\n3. Diana Prince\n\nThese members have been identified as having the capability to receive SMS notifications."
     },
     {
         "question": "Which members can receive SMS messages?",
@@ -136,12 +136,12 @@
                 "Diana Prince"
             ]
         ],
-        "final_answer": "The results indicate that the following members are able to receive SMS messages: Alice Johnson, Charlie Brown, and Diana Prince."
+        "final_answer": "The query identifies members who are eligible to receive SMS messages. The results show that the following members can receive SMS messages: Alice Johnson, Charlie Brown, and Diana Prince."
     },
     {
         "question": "Which members can receive SMS messages?",
         "strategy": "Cross-domain Few-shot",
-        "sql_query": "SELECT m.name FROM member m JOIN phone p ON m.member_id = p.member_id WHERE p.can_receive_sms = 1;",
+        "sql_query": "SELECT m.name FROM member m\nJOIN phone p ON m.member_id = p.member_id\nWHERE p.can_receive_sms = 1;",
         "query_results": [
             [
                 "Alice Johnson"
@@ -153,6 +153,123 @@
                 "Diana Prince"
             ]
         ],
-        "final_answer": "The results indicate that the following members are able to receive SMS messages: Alice Johnson, Charlie Brown, and Diana Prince."
+        "final_answer": "The results of the query indicate that the following members can receive SMS messages: Alice Johnson, Charlie Brown, and Diana Prince."
+    },
+    {
+        "question": "Which members attended more than one class and what are the names of the classes they attended?",
+        "strategy": "Zero-shot",
+        "sql_query": "\nSELECT m.name AS member_name, gc.name AS class_name\nFROM member m\nJOIN class_attendance ca ON m.member_id = ca.member_id\nJOIN gym_class gc ON ca.class_id = gc.class_id\nWHERE m.member_id IN (\n    SELECT member_id\n    FROM class_attendance\n    GROUP BY member_id\n    HAVING COUNT(class_id) > 1\n);\n",
+        "query_results": [
+            [
+                "Alice Johnson",
+                "Yoga"
+            ],
+            [
+                "Alice Johnson",
+                "HIIT"
+            ]
+        ],
+        "final_answer": "The results indicate that the member named Alice Johnson attended more than one class. Specifically, she participated in two different classes: Yoga and HIIT."
+    },
+    {
+        "question": "Which members attended more than one class and what are the names of the classes they attended?",
+        "strategy": "Single-domain Few-shot",
+        "sql_query": "\nSELECT m.name, g.name AS class_name\nFROM member m\nJOIN class_attendance ca ON m.member_id = ca.member_id\nJOIN gym_class g ON ca.class_id = g.class_id\nWHERE m.member_id IN (\n    SELECT member_id\n    FROM class_attendance\n    GROUP BY member_id\n    HAVING COUNT(class_id) > 1\n);\n",
+        "query_results": [
+            [
+                "Alice Johnson",
+                "Yoga"
+            ],
+            [
+                "Alice Johnson",
+                "HIIT"
+            ]
+        ],
+        "final_answer": "The results show that Alice Johnson is the only member who attended more than one class. She participated in two different classes: Yoga and HIIT."
+    },
+    {
+        "question": "Which members attended more than one class and what are the names of the classes they attended?",
+        "strategy": "Cross-domain Few-shot",
+        "sql_query": "\nSELECT m.name AS member_name, gc.name AS class_name\nFROM member m\nJOIN class_attendance ca ON m.member_id = ca.member_id\nJOIN gym_class gc ON ca.class_id = gc.class_id\nWHERE m.member_id IN (\n    SELECT member_id\n    FROM class_attendance\n    GROUP BY member_id\n    HAVING COUNT(class_id) > 1\n);\n",
+        "query_results": [
+            [
+                "Alice Johnson",
+                "Yoga"
+            ],
+            [
+                "Alice Johnson",
+                "HIIT"
+            ]
+        ],
+        "final_answer": "The results indicate that the member named Alice Johnson attended more than one class at the gym. Specifically, she participated in two classes: Yoga and HIIT."
+    },
+    {
+        "question": "What is the total revenue generated from memberships for each plan, and how many members are currently subscribed to each plan?",
+        "strategy": "Zero-shot",
+        "sql_query": "\nSELECT \n    mp.name AS plan_name,\n    SUM(mp.price) AS total_revenue,\n    COUNT(mm.member_id) AS total_members\nFROM \n    membership_plan mp\nLEFT JOIN \n    member_membership mm ON mp.plan_id = mm.plan_id\nWHERE \n    mm.end_date > DATE('now')\nGROUP BY \n    mp.plan_id;\n",
+        "query_results": [
+            [
+                "Basic Plan",
+                60,
+                2
+            ],
+            [
+                "Standard Plan",
+                100,
+                2
+            ],
+            [
+                "Premium Plan",
+                120,
+                1
+            ]
+        ],
+        "final_answer": "The results show the total revenue generated from memberships for each plan, along with the number of current members subscribed to each plan:\n\n1. **Basic Plan**: This plan has generated a total revenue of $60, with 2 members currently subscribed.\n2. **Standard Plan**: This plan has generated a total revenue of $100, with 2 members currently subscribed.\n3. **Premium Plan**: This plan has generated a total revenue of $120, with 1 member currently subscribed.\n\nIn summary, the Basic and Standard Plans have the same number of subscribers, while the Premium Plan has fewer subscribers but has generated the highest revenue among the three."
+    },
+    {
+        "question": "What is the total revenue generated from memberships for each plan, and how many members are currently subscribed to each plan?",
+        "strategy": "Single-domain Few-shot",
+        "sql_query": "\nSELECT \n    mp.name AS plan_name,\n    SUM(mp.price) AS total_revenue,\n    COUNT(mm.member_id) AS total_members\nFROM \n    membership_plan mp\nLEFT JOIN \n    member_membership mm ON mp.plan_id = mm.plan_id\nWHERE \n    mm.start_date <= DATE('now') AND mm.end_date >= DATE('now')\nGROUP BY \n    mp.plan_id;\n",
+        "query_results": [
+            [
+                "Basic Plan",
+                60,
+                2
+            ],
+            [
+                "Standard Plan",
+                100,
+                2
+            ],
+            [
+                "Premium Plan",
+                120,
+                1
+            ]
+        ],
+        "final_answer": "The results show the total revenue generated from memberships for each plan, along with the number of current subscribers for each plan. \n\n- For the **Basic Plan**, a total revenue of **$60** has been generated, and there are **2 members** currently subscribed.\n- For the **Standard Plan**, the total revenue is **$100**, with **2 members** currently subscribed.\n- The **Premium Plan** has generated a total revenue of **$120**, and there is **1 member** currently subscribed.\n\nIn summary, all three plans have active members, with the Premium Plan generating the highest revenue despite having the fewest subscribers."
+    },
+    {
+        "question": "What is the total revenue generated from memberships for each plan, and how many members are currently subscribed to each plan?",
+        "strategy": "Cross-domain Few-shot",
+        "sql_query": "\nSELECT \n    mp.name AS plan_name,\n    SUM(mp.price) AS total_revenue,\n    COUNT(mm.member_id) AS total_members\nFROM \n    membership_plan mp\nLEFT JOIN \n    member_membership mm ON mp.plan_id = mm.plan_id\nWHERE \n    mm.start_date <= DATE('now') AND mm.end_date >= DATE('now')\nGROUP BY \n    mp.plan_id;\n",
+        "query_results": [
+            [
+                "Basic Plan",
+                60,
+                2
+            ],
+            [
+                "Standard Plan",
+                100,
+                2
+            ],
+            [
+                "Premium Plan",
+                120,
+                1
+            ]
+        ],
+        "final_answer": "The results show the total revenue generated from memberships for each plan, along with the number of current subscribers for each plan. Here\u2019s a summary:\n\n- **Basic Plan**: This plan has generated a total revenue of $60 and currently has 2 members subscribed.\n- **Standard Plan**: This plan has generated a total revenue of $100 and also has 2 members subscribed.\n- **Premium Plan**: This plan has generated a total revenue of $120, with 1 member currently subscribed.\n\nIn total, there are 5 active members across these three plans, contributing to a combined revenue of $280."
     }
 ]
